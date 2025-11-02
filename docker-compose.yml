@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gs-postgres
+    environment:
+      POSTGRES_DB: gimme_scrapes
+      POSTGRES_USER: gimmescrapes
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gimmescrapes -d gimme_scrapes"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: gs-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: gs-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Uncomment when ready to run Spring Boot services
+  # orchestrator:
+  #   build:
+  #     context: .
+  #     dockerfile: gs-orchestrator/Dockerfile
+  #   container_name: gs-orchestrator
+  #   environment:
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_DB: gimme_scrapes
+  #     POSTGRES_USER: gimmescrapes
+  #     POSTGRES_PASSWORD: password
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     RABBITMQ_HOST: rabbitmq
+  #     RABBITMQ_PORT: 5672
+  #     RABBITMQ_USER: admin
+  #     RABBITMQ_PASSWORD: admin
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   networks:
+  #     - app-network
+
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: gs-worker/Dockerfile
+  #   container_name: gs-worker
+  #   environment:
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_DB: gimme_scrapes
+  #     POSTGRES_USER: gimmescrapes
+  #     POSTGRES_PASSWORD: password
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     RABBITMQ_HOST: rabbitmq
+  #     RABBITMQ_PORT: 5672
+  #     RABBITMQ_USER: admin
+  #     RABBITMQ_PASSWORD: admin
+  #     MAIL_HOST: smtp.gmail.com
+  #     MAIL_PORT: 587
+  #     MAIL_USERNAME: ${MAIL_USERNAME}
+  #     MAIL_PASSWORD: ${MAIL_PASSWORD}
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   networks:
+  #     - app-network
+
+  # ui:
+  #   build:
+  #     context: ./gs-ui
+  #     dockerfile: Dockerfile
+  #   container_name: gs-ui
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - orchestrator
+  #   networks:
+  #     - app-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:
+
+networks:
+  app-network:
+    driver: bridge
