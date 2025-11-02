@@ -18,6 +18,8 @@
     <description>React TypeScript Frontend for Gimme Scrapes</description>
 
     <properties>
+        <node.version>v20.11.0</node.version>
+        <npm.version>10.2.4</npm.version>
         <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
         <skipTests>true</skipTests>
     </properties>
@@ -30,10 +32,22 @@
                 <version>${frontend-maven-plugin.version}</version>
 
                 <configuration>
-                    <workingDirectory>${project.basedir}</workingDirectory>
+                    <installDirectory>target</installDirectory>
+                    <nodeVersion>${node.version}</nodeVersion>
+                    <npmVersion>${npm.version}</npmVersion>
+                    <workingDirectory>webapp</workingDirectory>
                 </configuration>
 
                 <executions>
+                    <!-- Install Node and NPM -->
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+
                     <!-- Run npm install -->
                     <execution>
                         <id>npm-install</id>
