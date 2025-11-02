@@ -1,8 +1,8 @@
 package com.deroahe.gimmescrapes.orchestrator.service;
 
+import com.deroahe.gimmescrapes.commons.config.RabbitMQConstants;
 import com.deroahe.gimmescrapes.commons.dto.EmailJobMessage;
 import com.deroahe.gimmescrapes.commons.dto.ScrapeJobMessage;
-import com.deroahe.gimmescrapes.orchestrator.config.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,8 +20,8 @@ public class MessagePublisherService {
                 message.getJobId(), message.getSourceId(), message.getSourceName());
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.SCRAPE_EXCHANGE,
-                RabbitMQConfig.SCRAPE_ROUTING_KEY,
+                RabbitMQConstants.SCRAPE_EXCHANGE,
+                RabbitMQConstants.SCRAPE_ROUTING_KEY,
                 message
         );
 
@@ -33,8 +33,8 @@ public class MessagePublisherService {
                 message.getJobId(), message.getRecipientEmail(), message.getEmailType());
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EMAIL_EXCHANGE,
-                RabbitMQConfig.EMAIL_ROUTING_KEY,
+                RabbitMQConstants.EMAIL_EXCHANGE,
+                RabbitMQConstants.EMAIL_ROUTING_KEY,
                 message
         );
 

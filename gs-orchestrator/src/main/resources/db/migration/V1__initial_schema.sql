@@ -22,6 +22,7 @@ CREATE TABLE listings (
     price DECIMAL(12, 2),
     currency VARCHAR(10) DEFAULT 'EUR',
     surface_sqm DECIMAL(10, 2),
+    price_per_sqm DECIMAL(10, 2),
     rooms INTEGER,
     bathrooms INTEGER,
     floor INTEGER,
@@ -44,6 +45,7 @@ CREATE TABLE listings (
 -- Create indexes for listings
 CREATE INDEX idx_listings_city ON listings(city);
 CREATE INDEX idx_listings_price ON listings(price);
+CREATE INDEX idx_listings_price_per_sqm ON listings(price_per_sqm);
 CREATE INDEX idx_listings_scraped ON listings(last_scraped_at);
 CREATE INDEX idx_listings_source ON listings(source_id);
 CREATE INDEX idx_listings_url ON listings(url);

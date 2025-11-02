@@ -58,6 +58,9 @@ public class Listing {
     @Column(name = "surface_sqm", precision = 10, scale = 2)
     private BigDecimal surfaceSqm;
 
+    @Column(name = "price_per_sqm", precision = 10, scale = 2)
+    private BigDecimal pricePerSqm;
+
     @Column
     private Integer rooms;
 

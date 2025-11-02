@@ -1,10 +1,10 @@
 package com.deroahe.gimmescrapes.worker.consumer;
 
+import com.deroahe.gimmescrapes.commons.config.RabbitMQConstants;
 import com.deroahe.gimmescrapes.commons.dto.EmailJobMessage;
 import com.deroahe.gimmescrapes.commons.enums.EmailJobStatus;
 import com.deroahe.gimmescrapes.commons.model.EmailJob;
-import com.deroahe.gimmescrapes.worker.config.RabbitMQConfig;
-import com.deroahe.gimmescrapes.worker.repository.EmailJobRepository;
+import com.deroahe.gimmescrapes.commons.repository.EmailJobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -19,7 +19,7 @@ public class EmailJobConsumer {
 
     private final EmailJobRepository emailJobRepository;
 
-    @RabbitListener(queues = RabbitMQConfig.EMAIL_QUEUE)
+    @RabbitListener(queues = RabbitMQConstants.EMAIL_QUEUE)
     public void consumeEmailJob(EmailJobMessage message) {
         log.info("Received email job message: jobId={}, recipientEmail={}, emailType={}",
                 message.getJobId(), message.getRecipientEmail(), message.getEmailType());
